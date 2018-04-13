@@ -246,8 +246,8 @@ class TestCloudAssetSigner(unittest.TestCase):
         signer = CloudAssetSigner.create(self.mock_options())
         assert signer.sign('index.html') == (
             'http://mock-cloud-asset.dev/private/skygear-test/index.html'
-            '?expired_at=1481072400'
-            '&signature=LvYkHVAGZuFm0AfaLKVDWuUuma15UUBd9Q4NgyII9QM%3D'
+            '?expired_at=1481101200'
+            '&signature=DP%2FMZ1Nbpm%2BpBW87E4xqahv3WFYYZoc5o7sGApTDMNM%3D'
             '.mock-token-extra')
 
     def test_sign_public(self):

@@ -15,6 +15,7 @@
 import configargparse as argparse
 from minio import Minio
 from minio.helpers import get_target_url
+from minio.signer import generate_credential_string
 
 from .common import BaseAssetSigner
 
@@ -28,6 +29,8 @@ class S3AssetSigner(BaseAssetSigner):
         self.bucket = bucket
         self.region = region
         self.url_prefix = url_prefix
+        self.access_key = access_key
+        self.access_secret = access_secret
         self.client = Minio('s3.amazonaws.com',
                             region=region,
                             access_key=access_key,
@@ -49,7 +52,9 @@ class S3AssetSigner(BaseAssetSigner):
         # current datetime.
         date = self.presign_interval_start_time
         response_headers = {
-            'X-Amz-Date': date.strftime("%Y%m%dT%H%M%SZ")
+            'X-Amz-Date': date.strftime("%Y%m%dT%H%M%SZ"),
+            'X-Amz-Credential': generate_credential_string(self.access_key,
+                date, self.region)
         }
         return self.client.presigned_get_object(
             self.bucket,

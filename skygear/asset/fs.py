@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import base64
+import calendar
 import hashlib
 import hmac
-import time
 from datetime import datetime
 
 import configargparse as argparse
@@ -35,7 +35,7 @@ class FileSystemAssetSigner(BaseAssetSigner):
             return '{}/{}'.format(self.url_prefix, name)
 
         expired_at = self.presign_expire_time
-        expired_at_str = str(int(time.mktime(expired_at.timetuple())))
+        expired_at_str = str(int(calendar.timegm(expired_at.utctimetuple())))
 
         hasher = hmac.new(self.secret.encode('utf-8'),
                           digestmod=hashlib.sha256)

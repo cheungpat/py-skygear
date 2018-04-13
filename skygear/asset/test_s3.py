@@ -107,16 +107,17 @@ class TestS3AssetSigner(unittest.TestCase):
 
     @patch('skygear.asset.common.time.time',
            Mock(return_value=1481095934.0))
-    @patch('skygear.asset.s3.Minio')
-    def test_signing(self, mock_client):
-        mock_client_instance = MagicMock()
-        mock_client.return_value = mock_client_instance
-        mock_client_instance.presigned_get_object.return_value = \
-            'http://skygear.dev/signed_url'
-
+    def test_signing(self):
         signer = S3AssetSigner.create(self.mock_options)
-        assert signer.sign('index.html') == \
-            mock_client_instance.presigned_get_object.return_value
+        assert signer.sign('an evil name with spaces') == \
+          'https://mock-s3-bucket.s3-ap-southeast-1.amazonaws.com/' + \
+          'an%20evil%20name%20with%20spaces' + \
+          '?X-Amz-Algorithm=AWS4-HMAC-SHA256' + \
+          '&X-Amz-Credential=mock_s3_access_key%2F20161207%2Fap-southeast-1%2Fs3%2Faws4_request' + \
+          '&X-Amz-Date=20161207T070000Z' + \
+          '&X-Amz-Expires=7200' + \
+          '&X-Amz-SignedHeaders=host' + \
+          '&X-Amz-Signature=ac0f8b550b4dee6de4688321e613882bd14f022ea76f0575abbc4c1d9d4df9d9'  # noqa
 
         response_headers = {
             'X-Amz-Date': '20161207T070000Z'
@@ -131,9 +132,9 @@ class TestS3AssetSigner(unittest.TestCase):
         options = self.mock_options
         options.asset_store_public = True
         signer = S3AssetSigner.create(options)
-        assert signer.sign('index.html') == (
+        assert signer.sign('an evil name with spaces') == (
             'https://mock-s3-bucket.s3-ap-southeast-1.amazonaws.com/'
-            'index.html')
+            'an%20evil%20name%20with%20spaces')
 
     def test_signing_public_with_url_prefix(self):
         options = self.mock_options

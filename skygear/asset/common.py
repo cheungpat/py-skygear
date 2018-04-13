@@ -24,10 +24,6 @@ class BaseAssetSigner:
         self.presign_interval = timedelta(seconds=presign_interval)
 
     @property
-    def signature_expiry_duration(self) -> timedelta:
-        return timedelta(minutes=15)
-
-    @property
     def signature_required(self) -> bool:
         return not self.public
 
